@@ -14,43 +14,35 @@ var whoosh = new Sound("http://soundbible.com/mp3/Audience_Applause-Matthiew11-1
     // Play the sound with an onEnd callback
 
 });
-
+function initialBoardState() {return [
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+    "-",
+];
+}
 class TicTacToeBoard extends Component {
     state = {
         winner: null,
         isWinnerDeclared: false,
         currentPlayer: "X",
-        boardState: [
-            "-",
-            "-",
-            "-",
-            "-",
-            "-",
-            "-",
-            "-",
-            "-",
-            "-",
-        ],
+        boardState:initialBoardState(),
         noticeMessage: "",
         gameEndedWithNoResult: false,
     };
     resetBoardState(index) {
+        console.log(initialBoardState())
         this.setState({
             winner: null,
             isWinnerDeclared: false,
             gameEndedWithNoResult: false,
             currentPlayer: "X",
-            boardState: [
-                "-",
-                "-",
-                "-",
-                "-",
-                "-",
-                "-",
-                "-",
-                "-",
-                "-",
-            ],
+            boardState: initialBoardState(),
             noticeMessage: "",
         });
     }
@@ -97,12 +89,14 @@ class TicTacToeBoard extends Component {
                 if (this.state.currentPlayer == "X")
                     this.setState({ currentPlayer: "O" });
                 else this.setState({ currentPlayer: "X" });
+                
                 if (!this.state.isWinnerDeclared) {
                     let count = 0;
                     this.state.boardState.forEach((val) => {
                         if (val == "X" || val == "O") count += 1;
                     });
                     if (count == 9) {
+                        console.log(this.state.isWinnerDeclared)
                         this.setState({ gameEndedWithNoResult: true });
                         this.gameEndedWithNoResultNotify();
                     }
@@ -133,10 +127,9 @@ class TicTacToeBoard extends Component {
     }
     declareWinner(winnerVal) {
         console.log("******** winner is ***" + winnerVal);
-        this.setState({ isWinnerDeclared: true });
-        this.setState({ winner: winnerVal });
-        const alreadyWinnerDeclared = `${winnerVal} has  won !!.`;
-
+        this.state.isWinnerDeclared=true;
+        this.state.winner = winnerVal;
+        const alreadyWinnerDeclared = `${this.state.winner} has  won !!.`;
         this.setState({ noticeMessage: alreadyWinnerDeclared });
         console.log(
             this.state.winner + " is the winner" + this.state.isWinnerDeclared
