@@ -55,6 +55,7 @@ class TicTacToeBoard extends Component {
         });
     }
     renderSquare(index) {
+        this[`Square${index}Ref`]= React.createRef();
         return (
             <Square
                 value={this.state.boardState[index]}
@@ -62,6 +63,7 @@ class TicTacToeBoard extends Component {
                 updateState={() => {
                     this.updateState(index);
                 }}
+                ref={this[`Square${index}Ref`]}
                 style={boardStyles.square}
             />
         );
@@ -105,6 +107,11 @@ class TicTacToeBoard extends Component {
                         this.gameEndedWithNoResultNotify();
                     }
                 }
+                //console.log("Hiting manula onlvick "+JSON.stringify(this["Square0Ref"]))
+                //console.log(this["Square8Ref"].current);
+                
+                this.implementMachineStep()
+
             } else {
                 const alreadyWinnerDeclared = `'${this.state.boardState[index]}' has already filled, kindly choose other square`;
                 this.setState({ noticeMessage: alreadyWinnerDeclared });
@@ -113,6 +120,16 @@ class TicTacToeBoard extends Component {
             const alreadyWinnerDeclared = `${this.state.winner} has already won !!. Kindly restart the game`;
             this.setState({ noticeMessage: alreadyWinnerDeclared });
         }
+    }
+    implementMachineStep() {
+        let player = this.state.currentPlayer;
+        if (player == "O") {
+            let machineFavIndex = this.getMachineFavourStep();
+
+        }
+    }
+    getMachineFavourStep() {
+        return 0;
     }
     declareWinner(winnerVal) {
         console.log("******** winner is ***" + winnerVal);
@@ -180,7 +197,7 @@ class TicTacToeBoard extends Component {
                     }
                 }
                 if (index == 0) {
-                    // 0-8 diagonal
+                    // 0-8 diagonal 
                     console.log(
                         this.state.boardState[index] +
                         this.state.boardState[index + 4] +
