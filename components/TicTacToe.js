@@ -6,8 +6,11 @@ import {
     View,
     TouchableOpacity,
     Alert,
+    Image,
+    ImageBackground,
 } from "react-native";
 import { sortArrayOfObjects, returnIndexFromFavStep } from '../utilities/common';
+import { Game,findTheBestMove } from "../utilities/gamelogic";
 
 var Sound = require("react-native-sound");
 var whoosh = new Sound(
@@ -15,16 +18,16 @@ var whoosh = new Sound(
     Sound.MAIN_BUNDLE,
     (error) => {
         if (error) {
-            console.log("failed to load the sound", error);
+            // console.log("failed to load the sound", error);
             return;
         }
         // loaded successfully
-        console.log(
-            "duration in seconds: " +
-            whoosh.getDuration() +
-            "number of channels: " +
-            whoosh.getNumberOfChannels()
-        );
+        // console.log(
+        //     "duration in seconds: " +
+        //     whoosh.getDuration() +
+        //     "number of channels: " +
+        //     whoosh.getNumberOfChannels()
+        // );
 
         // Play the sound with an onEnd callback
     }
@@ -47,7 +50,7 @@ class TicTacToeBoard extends Component {
         oneTimeHit: false
     };
     resetBoardState(index) {
-        console.log(initialBoardState());
+        // console.log(initialBoardState());
         this.setState({
             winner: null,
             isWinnerDeclared: false,
@@ -103,24 +106,24 @@ class TicTacToeBoard extends Component {
             this.gameEndedWithNoResultNotify();
             return;
         }
-        console.log("INDEX " + index + " " + this.state.boardState);
+        // console.log("INDEX " + index + " " + this.state.boardState);
         if (!this.state.isWinnerDeclared) {
             // stop revisting the mark 
-           
-                this.setState({machineBoardState:getMachineBoardState()})
-            
+
+            this.setState({ machineBoardState: getMachineBoardState() })
+
 
             let boardIndexValue = this.state.boardState[index];
             if (boardIndexValue == "-") {
                 this.clearNotifMessage();
-                console.log("Clicked the index " + index + this.state.currentPlayer);
+                // console.log("Clicked the index " + index + this.state.currentPlayer);
                 let tempState = this.state.boardState;
                 tempState[index] = this.state.currentPlayer;
-                console.log(tempState);
+                // console.log(tempState);
                 this.setState({ boardState: tempState });
-                console.log(
-                    this.state.boardState[index] + " " + { boardState: tempState }
-                );
+                // console.log(
+                //     this.state.boardState[index] + " " + { boardState: tempState }
+                // );
                 this.checkWinner();
                 if (this.state.currentPlayer == "X") { this.state.currentPlayer = "O"; }
                 else { this.state.currentPlayer = "X"; }
@@ -131,15 +134,15 @@ class TicTacToeBoard extends Component {
                         if (val == "X" || val == "O") count += 1;
                     });
                     if (count == 9) {
-                        console.log(this.state.isWinnerDeclared);
-                        this.setState({ gameEndedWithNoResult: true });
+                        // console.log(this.state.isWinnerDeclared);
+                        this.state.gameEndedWithNoResult= true ;
                         this.gameEndedWithNoResultNotify();
                     }
                 }
-                //console.log("Hiting manula onlvick "+JSON.stringify(this["Square0Ref"]))
-                //console.log(this["Square8Ref"].current);
-                //console.log(this.test8.props);
-                if (!this.state.isWinnerDeclared)
+                //// console.log("Hiting manula onlvick "+JSON.stringify(this["Square0Ref"]))
+                //// console.log(this["Square8Ref"].current);
+                //// console.log(this.test8.props);
+                if (!this.state.isWinnerDeclared && !this.state.gameEndedWithNoResult)
                     this.implementMachineStep();
             } else {
                 const alreadyWinnerDeclared = `'${this.state.boardState[index]}' has already filled, kindly choose other square`;
@@ -150,18 +153,29 @@ class TicTacToeBoard extends Component {
             this.setState({ noticeMessage: alreadyWinnerDeclared });
         }
     }
+    
     implementMachineStep() {
         let player = this.state.currentPlayer;
-        console.log("HIT CAME1" + player)
+        // console.log("HIT CAME1" + player)
         if (player == "O") {
             if (this.state.oneTimeHit == false) {
-                let machineFavIndex = this.getMachineFavourStep();
-                console.log("HIT CAME")
+                let game = new Game("X","O");
+                game.player="O";
+                game.opponent="X";
+                // console.log("^^^^^HITTING GAME LOGIC WITH BOARD ^^^^^^^" );
+                let arr = this.state.boardState.slice();
+        let newArr = [];
+        while (arr.length) newArr.push(arr.splice(0, 3));
+                // console.log("m"+newArr)
+               let k= game.findTheBestMove(newArr);
+               console.log("Before board state"+this.state.boardState+" Finished successfully "+k);
+                let machineFavIndex = k;//this.getMachineFavourStep();
+                // console.log("HIT CAMEllllllllllllllll"+k)
                 let temp = this.state.machineBoardState;
                 temp[machineFavIndex] = 'mark';
-                console.log("HIT CAME")
+                // console.log("HIT CAME")
                 this.setState({ machineBoardState: temp });
-                console.log("HIT CAME bd ste" + this.state.machineBoardState)
+                // console.log("HIT CAME bd ste" + this.state.machineBoardState)
             }
             else {
                 this.state.oneTimeHit = true;
@@ -217,11 +231,11 @@ class TicTacToeBoard extends Component {
             index++;
         }
         let sortedFavArr = sortArrayOfObjects(xSpottingInfo, "xCount");
-        console.log("SORTED ARRAY ", sortArrayOfObjects);
+        // console.log("SORTED ARRAY ", sortArrayOfObjects);
         let favStep = null;
         if (sortedFavArr.length > 0)
             favStep = sortedFavArr[0];
-        console.log("FAV STEP"+ favStep);
+        // console.log("FAV STEP" + favStep);
         if (favStep) {
             let favIndex = this.returnIndexFromFavStep(favStep);
             if (favIndex != "NA")
@@ -229,14 +243,14 @@ class TicTacToeBoard extends Component {
         }
         for (let k = 0; k < 9; k++) {
             if (boardState[k] == "-") {
-                console.log("RETURN NA" + k);
+                // console.log("RETURN NA" + k);
                 return k;
             }
         }
     }
 
     returnIndexFromFavStep(favStep) {
-        console.log(" CAME TO RETURNINDEXFROM FAVSTEP " + favStep);
+        // console.log(" CAME TO RETURNINDEXFROM FAVSTEP " + favStep);
         let favIndex = 0, pointer = 0;
         if (favStep["pathType"] == "horizontal") {
             // choose where to insert 
@@ -248,16 +262,16 @@ class TicTacToeBoard extends Component {
                 nearByRightWallIndex = pointer - nearByLeftWallDistance + 2;
 
             }
-            console.log("IN DEX : " + pointer + "Near by left walkl" + nearByLeftWallDistance + "right " + nearByRightWallIndex)
+            // console.log("IN DEX : " + pointer + "Near by left walkl" + nearByLeftWallDistance + "right " + nearByRightWallIndex)
             for (let movingPointer = nearByLeftWallDistance; movingPointer < pointer; movingPointer++) {
                 if (this.state.boardState[movingPointer] == "-") {
-                    console.log(" FOUND THE INDEX IN HOR LEFT" + movingPointer);
+                    // console.log(" FOUND THE INDEX IN HOR LEFT" + movingPointer);
                     return movingPointer;
                 }
             }
             for (let movingPointer = pointer + 1; movingPointer <= nearByRightWallIndex; movingPointer++) {
                 if (this.state.boardState[movingPointer] == "-") {
-                    console.log(" FOUND THE INDEX IN HOR right" + movingPointer);
+                    // console.log(" FOUND THE INDEX IN HOR right" + movingPointer);
                     return movingPointer;
                 }
             }
@@ -281,16 +295,16 @@ class TicTacToeBoard extends Component {
                 nearByBottomWallIndex = this.getNearByBottomIndex(pointer);
 
             }
-            console.log("IN DEX : " + pointer + "Near by top walkl" + nearByTopWallDistance + "bottom " + nearByBottomWallIndex)
+            // console.log("IN DEX : " + pointer + "Near by top walkl" + nearByTopWallDistance + "bottom " + nearByBottomWallIndex)
             for (let movingPointer = nearByTopWallDistance; movingPointer < pointer; movingPointer += 3) {
                 if (this.state.boardState[movingPointer] == "-") {
-                    console.log(" FOUND THE INDEX IN verf top" + movingPointer);
+                    // console.log(" FOUND THE INDEX IN verf top" + movingPointer);
                     return movingPointer;
                 }
             }
             for (let movingPointer = pointer + 1; movingPointer <= nearByBottomWallIndex; movingPointer++) {
                 if (this.state.boardState[movingPointer] == "-") {
-                    console.log(" FOUND THE INDEX IN ver bottom" + movingPointer);
+                    // console.log(" FOUND THE INDEX IN ver bottom" + movingPointer);
                     return movingPointer;
                 }
             }
@@ -311,20 +325,20 @@ class TicTacToeBoard extends Component {
 
 
     declareWinner(winnerVal) {
-        console.log("******** winner is ***" + winnerVal);
+        // console.log("******** winner is ***" + winnerVal);
         this.state.isWinnerDeclared = true;
         this.state.winner = winnerVal;
         const alreadyWinnerDeclared = `${this.state.winner} has  won !!.`;
         this.setState({ noticeMessage: alreadyWinnerDeclared });
-        console.log(
-            this.state.winner + " is the winner" + this.state.isWinnerDeclared
-        );
+        // console.log(
+        //     this.state.winner + " is the winner" + this.state.isWinnerDeclared
+        // );
         this.playClapSound();
     }
     playClapSound() {
         // play the file tone.mp3
         try {
-            console.log("start");
+            // console.log("start");
             // Enable playback in silence mode
             //Sound.setCategory('Playback');
 
@@ -333,13 +347,13 @@ class TicTacToeBoard extends Component {
 
             whoosh.play((success) => {
                 if (success) {
-                    console.log("successfully finished playing");
+                    // console.log("successfully finished playing");
                 } else {
-                    console.log("playback failed due to audio decoding errors");
+                    // console.log("playback failed due to audio decoding errors");
                 }
             });
         } catch (e) {
-            console.log("errrofdt");
+            // console.log("errrofdt");
         }
     }
     checkWinner() {
@@ -355,7 +369,7 @@ class TicTacToeBoard extends Component {
                         val == this.state.boardState[index + 1] &&
                         val == this.state.boardState[index + 2]
                     ) {
-                        console.log("declared!" + val);
+                        // console.log("declared!" + val);
                         this.declareWinner(val);
                         return;
                     }
@@ -367,24 +381,24 @@ class TicTacToeBoard extends Component {
                         val == this.state.boardState[index + 3] &&
                         val == this.state.boardState[index + 6]
                     ) {
-                        console.log("declared!2");
+                        // console.log("declared!2");
                         this.declareWinner(val);
                         return;
                     }
                 }
                 if (index == 0) {
                     // 0-8 diagonal
-                    console.log(
-                        this.state.boardState[index] +
-                        this.state.boardState[index + 4] +
-                        this.state.boardState[index + 8]
-                    );
+                    // console.log(
+                    //     this.state.boardState[index] +
+                    //     this.state.boardState[index + 4] +
+                    //     this.state.boardState[index + 8]
+                    // );
                     if (
                         val == this.state.boardState[index] &&
                         val == this.state.boardState[index + 4] &&
                         val == this.state.boardState[index + 8]
                     ) {
-                        console.log("declared3");
+                        // console.log("declared3");
                         this.declareWinner(val);
                         return;
                     }
@@ -396,7 +410,7 @@ class TicTacToeBoard extends Component {
                         val == this.state.boardState[index + 2] &&
                         val == this.state.boardState[index + 4]
                     ) {
-                        console.log("declared!4");
+                        // console.log("declared!4");
                         this.declareWinner(val);
                         return;
                     }
@@ -413,7 +427,9 @@ class TicTacToeBoard extends Component {
 
     render() {
         return (
-            <View style={{ marginTop: 200, marginLeft: 100, width: 200 }}>
+            
+         
+            <View style={{ marginTop: 100, marginLeft: 100, width: 200 }}>
                 <View>
                     <Text style={boardStyles.gameName}>TicTacToe</Text>
                 </View>
@@ -449,12 +465,13 @@ class TicTacToeBoard extends Component {
                         Alert.alert(
                             "",
                             this.state.noticeMessage,
-                            [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+                            [{ text: "OK", onPress: () =>  console.log("OK Pressed") }],
                             { cancelable: false }
                         )}
                 </View>
             </View>
-        );
+
+             );
     }
 }
 
@@ -467,9 +484,9 @@ class Square extends Component {
         // Adjust scroll so these new items don't push the old ones out of view.
         // (snapshot here is the value returned from getSnapshotBeforeUpdate)
         if (this.props !== null) {
-         //   console.log(this.props)
+            //   // console.log(this.props)
             if (this.props.machineSignal == "mark") {
-                console.log("came for hti")
+                // console.log("came for hti")
                 this.props.updateState();
             }
         }
@@ -504,6 +521,10 @@ const squareStyles = StyleSheet.create({
     },
 });
 const boardStyles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover', // or 'stretch'
+      },
     main: {
         borderColor: "black",
         flex: 1,
