@@ -410,7 +410,7 @@ class TicTacToeBoard extends Component {
                         val == this.state.boardState[index + 2] &&
                         val == this.state.boardState[index + 4]
                     ) {
-                        // console.log("declared!4");
+                         console.log("declared!4");
                         this.declareWinner(val);
                         return;
                     }
