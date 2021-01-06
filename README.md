@@ -1,5 +1,5 @@
 # TicTacToe # Auto selection # React Native #Javascript 
 React Native TicTacToe Game.
-Download the repo run "npm install"
+Download the repo and run "npm install"
 
 
